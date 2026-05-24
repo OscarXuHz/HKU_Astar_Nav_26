@@ -27,10 +27,12 @@ services:
     command: >
       bash -c "
         echo '=== Building livox_ws (Livox driver) ===' &&
-        cd /workspace/livox_ws && catkin_make &&
+        cd /workspace/livox_ws/src/livox_ros_driver2 &&
+        cp -f package_ROS1.xml package.xml &&
+        cd /workspace/livox_ws && catkin_make -DROS_EDITION=ROS1 -j4 &&
         echo '=== Building sim_nav (main workspace) ===' &&
         source /workspace/livox_ws/devel/setup.bash &&
-        cd /workspace/sim_nav && catkin_make &&
+        cd /workspace/sim_nav && catkin_make -j4 &&
         echo '=== Build complete ===' &&
         exec bash
       "

@@ -10,6 +10,20 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     libopencv-dev \
     # g2o (graph optimization for hdl_graph_slam)
     ros-noetic-libg2o \
+    # serial (dm_imu)
+    ros-noetic-serial \
+    # apr (livox_ros_driver2)
+    libapr1-dev \
+    # libdw (elfutils, bot_sim linker dependency)
+    libdw-dev \
+    # geodesy (hdl_graph_slam)
+    ros-noetic-geodesy \
+    # hdl_graph_slam extras
+    ros-noetic-nmea-msgs \
+    ros-noetic-interactive-markers \
+    # bot_sim extras
+    ros-noetic-costmap-converter \
+    ros-noetic-teb-local-planner \
     # OpenMP (Point-LIO, hdl_graph_slam)
     libomp-dev \
     # Python deps (hdl_graph_slam scripts)
@@ -23,24 +37,24 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     build-essential \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# ── Livox SDK (required by livox_ros_driver2) ────────────────────────
+# ── Livox SDK2 (required by livox_ros_driver2) ───────────────────────
 WORKDIR /tmp
-RUN git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK.git && \
-    cd Livox-SDK && mkdir -p build && cd build && \
+RUN git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK2.git && \
+    cd Livox-SDK2 && mkdir -p build && cd build && \
     cmake .. \
       -DCMAKE_CXX_FLAGS="-w" \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_C_COMPILER_LAUNCHER="" \
-      -DCMAKE_CXX_COMPILER_LAUNCHER="" && \
+      -DCMAKE_BUILD_TYPE=Release && \
     make -j1 && make install && \
-    rm -rf /tmp/Livox-SDK
+    rm -rf /tmp/Livox-SDK2
 
 # ── ROS workspace skeleton ───────────────────────────────────────────
 RUN mkdir -p /workspace/src
 WORKDIR /workspace
 
-# Source ROS and create a bashrc snippet for convenience
+# Source ROS and workspaces for convenience
 RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc && \
+    echo "source /workspace/livox_ws/devel/setup.bash --extend 2>/dev/null" >> /root/.bashrc && \
+    echo "source /workspace/sim_nav/devel/setup.bash --extend 2>/dev/null" >> /root/.bashrc && \
     echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> /root/.bashrc
 
 # Entrypoint: start a bash shell that sources ROS automatically
