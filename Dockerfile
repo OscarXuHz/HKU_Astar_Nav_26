@@ -9,7 +9,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     libeigen3-dev \
     libopencv-dev \
     # g2o (graph optimization for hdl_graph_slam)
-    libg2o-dev \
+    ros-noetic-libg2o \
     # OpenMP (Point-LIO, hdl_graph_slam)
     libomp-dev \
     # Python deps (hdl_graph_slam scripts)
@@ -25,10 +25,14 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
 
 # ── Livox SDK (required by livox_ros_driver2) ────────────────────────
 WORKDIR /tmp
-RUN git clone https://github.com/Livox-SDK/Livox-SDK.git && \
-    cd Livox-SDK && \
-    mkdir build && cd build && \
-    cmake .. && make -j$(nproc) && make install && \
+RUN git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK.git && \
+    cd Livox-SDK && mkdir -p build && cd build && \
+    cmake .. \
+      -DCMAKE_CXX_FLAGS="-w" \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_C_COMPILER_LAUNCHER="" \
+      -DCMAKE_CXX_COMPILER_LAUNCHER="" && \
+    make -j1 && make install && \
     rm -rf /tmp/Livox-SDK
 
 # ── ROS workspace skeleton ───────────────────────────────────────────
