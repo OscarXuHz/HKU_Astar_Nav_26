@@ -53,6 +53,16 @@ source /workspace/livox_ws/devel/setup.bash --extend
 source /workspace/sim_nav/devel/setup.bash --extend
 ```
 
+### If at mainland China:
+```bash
+# config .env to set proxy, see .env.example for reference
+cp .env.example .env
+# pull osrf/ros:noetic-desktop-full manually (may be blocked by GFW, use VPN or mirror registry if needed)
+docker pull osrf/ros:noetic-desktop-full
+# build image with no-cache to ensure all layers are built with proxy settings
+docker compose build --no-cache
+```
+
 ## Architecture
 
 ### Workspaces
@@ -191,3 +201,4 @@ git submodule update --init --recursive
 - ROG-Map config: `sim_nav/src/bot_sim/config/rog_map_config.yaml`
 - Static map: `sim_nav/src/bot_sim/map/innowing.yaml` (PGM format, served by `map_server`)
 - The `TELEOP` button on the MCU must be held for serial communication to relay navigation commands (safety interlock)
+

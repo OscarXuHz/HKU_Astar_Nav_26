@@ -11,6 +11,8 @@ __pycache__/
 *.so
 .vscode/
 .idea/
+.env
+.env.local
 .git/
 *.swp
 *.swo
